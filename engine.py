@@ -32,17 +32,17 @@ class Scene:
             if particle.y < 0 or particle.y > self.height:
                 particle.vy *= -1
 
-    def handle_mouse_motion(self, mouse_x, mouse_y):
+    def handle_mouse_button(self, mouse_x, mouse_y, button):
         for particle in self.particles:
             dx = mouse_x - particle.x
             dy = mouse_y - particle.y
             distance = (dx**2 + dy**2)**0.5
-            if distance < 100:
+            if button == 1:  # Left button
+                particle.ax = dx / distance * 0.5
+                particle.ay = dy / distance * 0.5
+            elif button == 3:  # Right button
                 particle.ax = -dx / distance * 0.5
                 particle.ay = -dy / distance * 0.5
-            else:
-                particle.ax = 0
-                particle.ay = 0.1
 
 class Renderer:
     def __init__(self, width, height):
@@ -71,9 +71,9 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
-            elif event.type == pygame.MOUSEMOTION:
+            elif event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_x, mouse_y = event.pos
-                scene.handle_mouse_motion(mouse_x, mouse_y)
+                scene.handle_mouse_button(mouse_x, mouse_y, event.button)
 
         scene.update()
         renderer.render(scene)
